@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CourseManagement.UserMethods;
 
 namespace CourseManagement.Dashboards {
     public class AdminDashboard : Dashboard {
@@ -19,7 +20,9 @@ namespace CourseManagement.Dashboards {
         public AdminDashboard(App myapp) : base(myapp) { }
         public override void Render() {
             string[] adminOptions = {
-                "Create User",
+                "Create Admin",
+                "Create Teacher",
+                "Create Student",
                 "Create Course",
                 "Assign Teacher to course",
                 "Enroll Student to course",
@@ -31,51 +34,35 @@ namespace CourseManagement.Dashboards {
 
             switch (selectedIndex) {
                 case 0:
-                    CreateUser();
+                    AdminMethods.CreateAdmin();
+                    Render();
                     break;
                 case 1:
-                    CreateCourse();
+                    AdminMethods.CreateTeacher();
+                    Render();
                     break;
                 case 2:
-                    AssignTeacher();
+                    AdminMethods.CreateStudent();
+                    Render();
                     break;
                 case 3:
-                    EnrollStudent();
+                    AdminMethods.CreateCourse();
+                    Render();
                     break;
                 case 4:
+                    AdminMethods.AssignTeacher();
+                    Render();
+                    break;
+                case 5:
+                    AdminMethods.EnrollStudent();
+                    Render();
+                    break;
+                case 6:
                     MyApp.Start();
+                    Render();
                     break;
 
             }
-        }
-
-        private void CreateUser() {
-            Console.Clear();
-            Console.WriteLine(adminPrompt);
-            Console.WriteLine("Create User");
-            Console.ReadKey(true);
-            Render();
-        }
-        private void CreateCourse() {
-            Console.Clear();
-            Console.WriteLine(adminPrompt);
-            Console.WriteLine("Create Course");
-            Console.ReadKey(true);
-            Render();
-        }
-        private void AssignTeacher() {
-            Console.Clear();
-            Console.WriteLine(adminPrompt);
-            Console.WriteLine("Assign Teacher to Course");
-            Console.ReadKey(true);
-            Render();
-        }
-        private void EnrollStudent() {
-            Console.Clear();
-            Console.WriteLine(adminPrompt);
-            Console.WriteLine("Enroll Student to Course");
-            Console.ReadKey(true);
-            Render();
         }
     }
 }

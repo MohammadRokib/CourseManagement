@@ -71,7 +71,7 @@ namespace CourseManagement {
             return dashboardMenu.Run();
         }
 
-        private bool Login() {
+        public bool Login() {
             Console.Clear();
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.WriteLine(loginPrompt);
