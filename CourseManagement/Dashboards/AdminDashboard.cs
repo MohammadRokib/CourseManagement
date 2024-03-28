@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CourseManagement.Dashboards {
     public class AdminDashboard : Dashboard {
-        private string prompt = @"
+        private string adminPrompt = @"
  █████  ██████  ███    ███ ██ ███    ██     ██████   █████  ███████ ██   ██ ██████   ██████   █████  ██████  ██████  
 ██   ██ ██   ██ ████  ████ ██ ████   ██     ██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██ 
 ███████ ██   ██ ██ ████ ██ ██ ██ ██  ██     ██   ██ ███████ ███████ ███████ ██████  ██    ██ ███████ ██████  ██   ██ 
@@ -26,7 +26,7 @@ namespace CourseManagement.Dashboards {
                 "Logout"
             };
 
-            Menu adminMenu = new Menu(adminOptions, prompt);
+            Menu adminMenu = new Menu(adminOptions, adminPrompt);
             int selectedIndex = adminMenu.Run();
 
             switch (selectedIndex) {
@@ -51,28 +51,28 @@ namespace CourseManagement.Dashboards {
 
         private void CreateUser() {
             Console.Clear();
-            Console.WriteLine(prompt);
+            Console.WriteLine(adminPrompt);
             Console.WriteLine("Create User");
             Console.ReadKey(true);
             Render();
         }
         private void CreateCourse() {
             Console.Clear();
-            Console.WriteLine(prompt);
+            Console.WriteLine(adminPrompt);
             Console.WriteLine("Create Course");
             Console.ReadKey(true);
             Render();
         }
         private void AssignTeacher() {
             Console.Clear();
-            Console.WriteLine(prompt);
+            Console.WriteLine(adminPrompt);
             Console.WriteLine("Assign Teacher to Course");
             Console.ReadKey(true);
             Render();
         }
         private void EnrollStudent() {
             Console.Clear();
-            Console.WriteLine(prompt);
+            Console.WriteLine(adminPrompt);
             Console.WriteLine("Enroll Student to Course");
             Console.ReadKey(true);
             Render();

@@ -18,13 +18,13 @@ namespace CourseManagement.Dashboards {
         
         public StudentDashboard(App myApp) : base(myApp) { }
         public override void Render() {
-            string[] options = {
+            string[] studentOptions = {
                 "Give attendence",
                 "Check attendence",
                 "Logout"
             };
 
-            Menu studentMenu = new Menu(options, studentPrompt);
+            Menu studentMenu = new Menu(studentOptions, studentPrompt);
             int selectedIndex = studentMenu.Run();
 
             switch (selectedIndex) {

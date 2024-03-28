@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace CourseManagement.Dashboards {
     public class Dashboard {
         protected App MyApp;
+
         public Dashboard(App myapp) {
             MyApp = myapp;
         }

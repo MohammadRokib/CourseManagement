@@ -29,6 +29,13 @@ namespace CourseManagement {
             teacherDashboard = new TeacherDashboard(this);
         }
         public void Start() {
+            int selectedIndex = Dashboard();
+            switch (selectedIndex) {
+                case 1:
+                    Utils.QuitConsole();
+                    break;
+            }
+
             bool loginSuccess = Login();
 
             if (!loginSuccess) {
@@ -43,6 +50,25 @@ namespace CourseManagement {
             else if (Username == "teacher")
                 teacherDashboard.Render();
 
+        }
+
+        private int Dashboard() {
+            string dashboardPrompt = @"
+██████   █████  ███████ ██   ██ ██████   ██████   █████  ██████  ██████  
+██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██ 
+██   ██ ███████ ███████ ███████ ██████  ██    ██ ███████ ██████  ██   ██ 
+██   ██ ██   ██      ██ ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██ 
+██████  ██   ██ ███████ ██   ██ ██████   ██████  ██   ██ ██   ██ ██████  
+                                                                         
+                                                                         
+";
+            string[] dashboardOptions = {
+                "Login",
+                "Exit"
+            };
+
+            Menu dashboardMenu = new Menu(dashboardOptions, dashboardPrompt);
+            return dashboardMenu.Run();
         }
 
         private bool Login() {

@@ -18,12 +18,12 @@ namespace CourseManagement.Dashboards {
 
         public TeacherDashboard(App myApp) : base(myApp) { }
         public override void Render() {
-            string[] options = {
+            string[] teacherOptions = {
                 "Check Attendence report",
                 "Logout"
             };
 
-            Menu teacherMenu = new Menu(options, teacherPrompt);
+            Menu teacherMenu = new Menu(teacherOptions, teacherPrompt);
             int selectedIndex = teacherMenu.Run();
 
             switch (selectedIndex) {
