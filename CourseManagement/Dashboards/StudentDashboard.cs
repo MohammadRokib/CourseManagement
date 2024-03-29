@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CourseManagement.Dashboards {
     public class StudentDashboard : Dashboard {
+        private readonly ApplicationDbContext _context;
         private string studentPrompt = @"
 ███████ ████████ ██    ██ ██████  ███████ ███    ██ ████████     ██████   █████  ███████ ██   ██ ██████   ██████   █████  ██████  ██████  
 ██         ██    ██    ██ ██   ██ ██      ████   ██    ██        ██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██ 
@@ -16,7 +17,9 @@ namespace CourseManagement.Dashboards {
                                                                                                                                           
 ";
         
-        public StudentDashboard(App myApp) : base(myApp) { }
+        public StudentDashboard(App myApp, ApplicationDbContext context) : base(myApp, context) {
+            _context = context;
+        }
         public override void Render() {
             string[] studentOptions = {
                 "Give attendence",

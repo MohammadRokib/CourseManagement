@@ -13,7 +13,7 @@ namespace CourseManagement {
         private readonly string _migrationAssembly;
 
         public ApplicationDbContext() {
-            _connectionString = "Server=(localdb)\\MSSQLLocalDB; Database=AttendenceSystem; Trusted_Connection=True";
+            _connectionString = "Server=(localdb)\\MSSQLLocalDB; Database=CourseManagement; Trusted_Connection=True";
             _migrationAssembly = Assembly.GetExecutingAssembly().GetName().Name;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {

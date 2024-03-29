@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace CourseManagement {
     public class App {
+        private readonly ApplicationDbContext _context;
+
         public StudentDashboard studentDashboard;
         public TeacherDashboard teacherDashboard;
         public AdminDashboard adminDashboard;
@@ -23,10 +25,12 @@ namespace CourseManagement {
         private string Username;
         private string UserId;
 
-        public App() {
-            adminDashboard = new AdminDashboard(this);
-            studentDashboard = new StudentDashboard(this);
-            teacherDashboard = new TeacherDashboard(this);
+        public App(ApplicationDbContext context) {
+            _context = context;
+
+            adminDashboard = new AdminDashboard(this, _context);
+            studentDashboard = new StudentDashboard(this, _context);
+            teacherDashboard = new TeacherDashboard(this, _context);
         }
         public void Start() {
             int selectedIndex = Dashboard();

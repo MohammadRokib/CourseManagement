@@ -1,7 +1,9 @@
 ﻿namespace CourseManagement {
     internal class Program {
         static void Main(string[] args) {
-            App myApp = new App();
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            App myApp = new App(context);
             myApp.Start();
         }
     }

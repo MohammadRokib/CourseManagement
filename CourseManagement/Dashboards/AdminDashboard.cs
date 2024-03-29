@@ -7,6 +7,7 @@ using CourseManagement.UserMethods;
 
 namespace CourseManagement.Dashboards {
     public class AdminDashboard : Dashboard {
+        private readonly ApplicationDbContext _context;
         private string adminPrompt = @"
  █████  ██████  ███    ███ ██ ███    ██     ██████   █████  ███████ ██   ██ ██████   ██████   █████  ██████  ██████  
 ██   ██ ██   ██ ████  ████ ██ ████   ██     ██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██ 
@@ -17,7 +18,9 @@ namespace CourseManagement.Dashboards {
                                                                                                                      
 ";
 
-        public AdminDashboard(App myapp) : base(myapp) { }
+        public AdminDashboard(App myapp, ApplicationDbContext context) : base(myapp, context) {
+            _context = context;
+        }
         public override void Render() {
             string[] adminOptions = {
                 "Create Admin",
@@ -38,23 +41,23 @@ namespace CourseManagement.Dashboards {
                     Render();
                     break;
                 case 1:
-                    AdminMethods.CreateTeacher();
+                    AdminMethods.CreateTeacher(_context);
                     Render();
                     break;
                 case 2:
-                    AdminMethods.CreateStudent();
+                    AdminMethods.CreateStudent(_context);
                     Render();
                     break;
                 case 3:
-                    AdminMethods.CreateCourse();
+                    AdminMethods.CreateCourse(_context);
                     Render();
                     break;
                 case 4:
-                    AdminMethods.AssignTeacher();
+                    AdminMethods.AssignTeacher(_context);
                     Render();
                     break;
                 case 5:
-                    AdminMethods.EnrollStudent();
+                    AdminMethods.EnrollStudent(_context);
                     Render();
                     break;
                 case 6:
