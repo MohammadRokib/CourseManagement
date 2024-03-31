@@ -69,9 +69,25 @@ namespace CourseManagement.UserMethods {
             Console.Clear();
             Console.WriteLine(createAdminPrompt);
 
+            (int left, int top) = Console.GetCursorPosition();
+            Console.WriteLine("Press Enter to continue or Esc to go back");
+            ConsoleKeyInfo confirmationKey = Console.ReadKey(true);
+
+            switch (confirmationKey.Key) {
+                case ConsoleKey.Enter:
+                    Console.SetCursorPosition(left, top);
+                    Console.Write(new string(' ', Console.WindowWidth));
+                    Console.SetCursorPosition(left, top);
+                    break;
+                case ConsoleKey.Escape:
+                    return;
+                default:
+                    CreateAdmin();
+                    break;
+            }
+
             string userId = "A-001";
             string name = AnsiConsole.Ask<string>("[green]Name[/]:");
-            string username = AnsiConsole.Ask<string>("[green]Username[/]:");
             string password1 = AnsiConsole.Prompt(
                 new TextPrompt<string>("[green]Enter Password[/]:")
                 .PromptStyle("red")
@@ -83,17 +99,17 @@ namespace CourseManagement.UserMethods {
                 .Secret()
             );
 
-            if (password1 == password2 && name != null && username != null && password1 != null) {
+            if (password1 == password2 && name != null && password1 != null) {
                 Admin newAdmin = new Admin {
                     UserId = userId,
                     Name = name,
                     Password = password1
                 };
 
-                _context.Add(newAdmin);
-                _context.SaveChanges();
+                /*_context.Add(newAdmin);
+                _context.SaveChanges();*/
 
-                AnsiConsole.Markup("\n\n[underline green]Admin Created Successfully[/]");
+                AnsiConsole.Markup("\n[underline green]Admin Created Successfully[/]");
                 Utils.WaitForKeyPress();
             } else {
                 AnsiConsole.Markup("\n\n[underline red]Something went wrong. Try again[/]");
@@ -132,6 +148,16 @@ namespace CourseManagement.UserMethods {
             Console.WriteLine(enrollStudentPrompt);
             Console.WriteLine("Enroll Student to Course");
             Console.ReadKey(true);
+        }
+
+        private string GenerateId() {
+            Admin admin = _context.Admins
+                .OrderByDescending(u => u.UserId)
+                .FirstOrDefault();
+
+            int newNumericPart = 1;
+            string newUserId = "";
+            return newUserId;
         }
     }
 }
