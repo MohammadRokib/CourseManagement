@@ -106,7 +106,7 @@ namespace CourseManagement {
             string password = (string)AnsiConsole.Prompt(
                 new TextPrompt<string>("[green]Password[/]:")
                 .PromptStyle("red")
-                .Secret('-')
+                .Secret('*')
             );
 
             User user = new User();

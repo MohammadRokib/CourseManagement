@@ -86,7 +86,8 @@ namespace CourseManagement.UserMethods {
                     break;
             }
 
-            string userId = "A-001";
+            string userId = GenerateId();
+            AnsiConsole.Markup($"[green]UserId[/]: [grey]{userId}[/]\n");
             string name = AnsiConsole.Ask<string>("[green]Name[/]:");
             string password1 = AnsiConsole.Prompt(
                 new TextPrompt<string>("[green]Enter Password[/]:")
@@ -106,8 +107,8 @@ namespace CourseManagement.UserMethods {
                     Password = password1
                 };
 
-                /*_context.Add(newAdmin);
-                _context.SaveChanges();*/
+                _context.Add(newAdmin);
+                _context.SaveChanges();
 
                 AnsiConsole.Markup("\n[underline green]Admin Created Successfully[/]");
                 Utils.WaitForKeyPress();
@@ -150,14 +151,19 @@ namespace CourseManagement.UserMethods {
             Console.ReadKey(true);
         }
 
-        private string GenerateId() {
-            Admin admin = _context.Admins
+        private static string GenerateId() {
+            Admin lastAdmin = _context.Admins
                 .OrderByDescending(u => u.UserId)
                 .FirstOrDefault();
 
             int newNumericPart = 1;
-            string newUserId = "";
-            return newUserId;
+            if (lastAdmin != null) {
+                string numericPart = lastAdmin.UserId.Substring(lastAdmin.UserId.IndexOf('-') + 1);
+                newNumericPart = int.Parse(numericPart) + 1;
+            }
+
+            string newAdminId = "A-" + newNumericPart.ToString("D3");
+            return newAdminId;
         }
     }
 }
