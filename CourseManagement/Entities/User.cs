@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CourseManagement.Entities {
-    public class Admin : User {
+    public class User {
         public int Id { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }

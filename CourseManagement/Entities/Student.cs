@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CourseManagement.Entities {
-    public class Student {
+    public class Student : User {
         public int Id { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }

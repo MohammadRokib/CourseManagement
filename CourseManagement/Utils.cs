@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace CourseManagement {
     static class Utils {
         public static void WaitForKeyPress() {
-            Console.WriteLine("Press any ke to continue");
+            Console.WriteLine("\nPress any key to continue");
             Console.ReadKey(true);
         }
         public static void QuitConsole() {
-            Console.WriteLine("Press any key to exit");
+            Console.WriteLine("\nPress any key to exit");
             Console.ReadKey(true);
             Environment.Exit(0);
         }

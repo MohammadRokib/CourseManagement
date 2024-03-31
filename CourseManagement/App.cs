@@ -1,4 +1,5 @@
 ﻿using CourseManagement.Dashboards;
+using CourseManagement.Entities;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,6 @@ namespace CourseManagement {
                                            
                                            
 ";
-        private string Username;
-        private string UserId;
 
         public App(ApplicationDbContext context) {
             _context = context;
@@ -40,20 +39,25 @@ namespace CourseManagement {
                     break;
             }
 
-            bool loginSuccess = Login();
+            (bool loginSuccess, string userId) = Login();
 
             if (!loginSuccess) {
-                Console.WriteLine("Invalid credentials");
+                Console.WriteLine("Invalid credentials. Press any key");
+                Console.ReadKey(true);
                 Start();
             }
 
-            if (Username == "admin")
-                adminDashboard.Render();
-            else if (Username == "student")
-                studentDashboard.Render();
-            else if (Username == "teacher")
-                teacherDashboard.Render();
-
+            switch (userId[0]) {
+                case 'A':
+                    adminDashboard.Render();
+                    break;
+                case 'T':
+                    teacherDashboard.Render();
+                    break;
+                case 'S':
+                    studentDashboard.Render();
+                    break;
+            }
         }
 
         private int Dashboard() {
@@ -75,71 +79,67 @@ namespace CourseManagement {
             return dashboardMenu.Run();
         }
 
-        public bool Login() {
+        public (bool, string) Login() {
             Console.Clear();
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.WriteLine(loginPrompt);
 
-            Username = AnsiConsole.Ask<string>("[green]Username[/]:");
-            string Password = AnsiConsole.Prompt(
+            (int left, int top) = Console.GetCursorPosition();
+            Console.WriteLine("Press Enter to continue or Esc to go back");
+            ConsoleKeyInfo confirmationKey = Console.ReadKey(true);
+
+            switch (confirmationKey.Key) {
+                case ConsoleKey.Enter:
+                    Console.SetCursorPosition(left, top);
+                    Console.Write(new string(' ', Console.WindowWidth));
+                    Console.SetCursorPosition(left, top);
+                    break;
+                case ConsoleKey.Escape:
+                    Start();
+                    break;
+                default:
+                    Login();
+                    break;
+            }
+
+            string userid = AnsiConsole.Ask<string>("[green]User Id[/]:");
+            string password = (string)AnsiConsole.Prompt(
                 new TextPrompt<string>("[green]Password[/]:")
                 .PromptStyle("red")
-                .Secret()
+                .Secret('-')
             );
 
-            if (Username != null && Password != null) {
-                UserId = "user-001";
-                return true;
+            User user = new User();
+            if (userid != null && password != null) {
+                switch (userid[0]) {
+                    case 'A':
+                        user = _context.Admins.Where(x => x.UserId == userid)
+                            .FirstOrDefault();
+                        break;
+                    case 'T':
+                        user = _context.Teachers.Where(x => x.UserId == userid)
+                            .FirstOrDefault();
+                        break;
+                    case 'S':
+                        user = _context.Student.Where(x => x.UserId == userid)
+                            .FirstOrDefault();
+                        break;
+                }
+
+                if (user != null) {
+                    if (user is Admin adminUser && adminUser.Password == password) {
+                        return (true, adminUser.UserId);
+                    } else if (user is Teacher teacherUser && teacherUser.Password == password) {
+                        return (true, teacherUser.UserId);
+                    } else if (user is Student studentUser && studentUser.Password == password) {
+                        return (true, studentUser.UserId);
+                    } else {
+                        return (false, null);
+                    }
+                }
             }
-            return false;
-        }
-        private void RunMainMenu() {
-            string prefix = "\u001b[33m";
-            string postfix = "\u001b[0m";
 
-            string prompt = @$"{prefix}
-____ ____ _  _ ____ ____ ____    _  _ ____ _  _ ____ ____ ____ _  _ ____ _  _ ___    ____ _   _ ____ ___ ____ _  _ 
-|    |  | |  | |__/ [__  |___    |\/| |__| |\ | |__| | __ |___ |\/| |___ |\ |  |     [__   \_/  [__   |  |___ |\/| 
-|___ |__| |__| |  \ ___] |___    |  | |  | | \| |  | |__] |___ |  | |___ | \|  |     ___]   |   ___]  |  |___ |  | 
-                                                                                                                   
-{postfix}";
-            string[] options = {
-                "Login",
-                "Exit"
-            };
-
-            Menu mainMenu = new Menu(options, prompt);
-            int selectedIndex = mainMenu.Run();
-
-            switch (selectedIndex) {
-                case 0:
-                    LoginMenu();
-                    break;
-                case 1:
-                    ExitApp();
-                    break;
-
-            }
-        }
-        private void LoginMenu() {
-            string prefix = "\u001b[33m";
-            string postfix = "\u001b[0m";
-            string prompt = @$"{prefix}
-  _                     ___        
- | |     ___   __ _    |_ _|  _ _  
- | |__  / _ \ / _` |    | |  | ' \ 
- |____| \___/ \__, |   |___| |_||_|
-              |___/                
-{postfix}";
-
-            Menu loginMenu = new Menu(new[] {"empty"}, prompt);
-            loginMenu.Login();
-            ExitApp();
-        }
-        private void ExitApp() {
-            Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey(true);
-            Environment.Exit(0);
+            return (false, null);
         }
     }
 }
