@@ -65,9 +65,9 @@ namespace CourseManagement.UserMethods {
                                                                                                                     
 ";
 
-        public static void CreateAdmin() {
+        public static (string, string, string) CreateUser(string userPrompt, string userId) {
             Console.Clear();
-            Console.WriteLine(createAdminPrompt);
+            Console.WriteLine(userPrompt);
 
             (int left, int top) = Console.GetCursorPosition();
             Console.WriteLine("Press Enter to continue or Esc to go back");
@@ -80,13 +80,13 @@ namespace CourseManagement.UserMethods {
                     Console.SetCursorPosition(left, top);
                     break;
                 case ConsoleKey.Escape:
-                    return;
+                    return (null, null, null);
                 default:
-                    CreateAdmin();
+                    CreateUser(userPrompt, userId);
                     break;
             }
 
-            string userId = GenerateId();
+            string _userId = userId;
             AnsiConsole.Markup($"[green]UserId[/]: [grey]{userId}[/]\n");
             string name = AnsiConsole.Ask<string>("[green]Name[/]:");
             string password1 = AnsiConsole.Prompt(
@@ -101,24 +101,41 @@ namespace CourseManagement.UserMethods {
             );
 
             if (password1 == password2 && name != null && password1 != null) {
+                return (_userId, name, password1);
+            }
+
+            AnsiConsole.Markup("\n\n[underline red]Something went wrong. Try again[/]");
+            Console.ReadKey(true);
+            return (null, null, null);
+        }
+
+        public static void CreateAdmin() {
+            Admin lastAdmin = _context.Admins
+                .OrderByDescending(u => u.UserId)
+                .FirstOrDefault();
+
+            int newNumericPart = 1;
+            if (lastAdmin != null) {
+                string numericPart = lastAdmin.UserId.Substring(lastAdmin.UserId.IndexOf('-') + 1);
+                newNumericPart = int.Parse(numericPart) + 1;
+            }
+
+            string userId = "A-" + newNumericPart.ToString("D3");
+            (userId, string name, string password) = CreateUser(createAdminPrompt, userId);
+
+            if (userId != null && name != null && password != null) {
                 Admin newAdmin = new Admin {
                     UserId = userId,
                     Name = name,
-                    Password = password1
+                    Password = password
                 };
 
                 _context.Add(newAdmin);
                 _context.SaveChanges();
 
                 AnsiConsole.Markup("\n[underline green]Admin Created Successfully[/]");
-                Utils.WaitForKeyPress();
-            } else {
-                AnsiConsole.Markup("\n\n[underline red]Something went wrong. Try again[/]");
-                Console.ReadKey(true);
-                CreateAdmin();
             }
-
-            Console.ReadKey(true);
+            Utils.WaitForKeyPress();
         }
         public static void CreateTeacher(ApplicationDbContext context) {
             Console.Clear();
@@ -149,21 +166,6 @@ namespace CourseManagement.UserMethods {
             Console.WriteLine(enrollStudentPrompt);
             Console.WriteLine("Enroll Student to Course");
             Console.ReadKey(true);
-        }
-
-        private static string GenerateId() {
-            Admin lastAdmin = _context.Admins
-                .OrderByDescending(u => u.UserId)
-                .FirstOrDefault();
-
-            int newNumericPart = 1;
-            if (lastAdmin != null) {
-                string numericPart = lastAdmin.UserId.Substring(lastAdmin.UserId.IndexOf('-') + 1);
-                newNumericPart = int.Parse(numericPart) + 1;
-            }
-
-            string newAdminId = "A-" + newNumericPart.ToString("D3");
-            return newAdminId;
         }
     }
 }
