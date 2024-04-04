@@ -65,7 +65,7 @@ namespace CourseManagement.UserMethods {
                                                                                                                     
 ";
 
-        public static (string, string, string) CreateUser(string userPrompt, string userId) {
+        public static (string?, string?, string?) CreateUser(string userPrompt, string userId) {
             Console.Clear();
             Console.WriteLine(userPrompt);
 
@@ -110,7 +110,7 @@ namespace CourseManagement.UserMethods {
         }
 
         public static void CreateAdmin() {
-            Admin lastAdmin = _context.Admins
+            Admin? lastAdmin = _context.Admins
                 .OrderByDescending(u => u.UserId)
                 .FirstOrDefault();
 
@@ -138,16 +138,60 @@ namespace CourseManagement.UserMethods {
             Utils.WaitForKeyPress();
         }
         public static void CreateTeacher() {
-            Console.Clear();
-            Console.WriteLine(createTeacherPrompt);
-            Console.WriteLine("Create Teacher");
-            Console.ReadKey(true);
+            Teacher? lastTeacher = _context.Teachers
+                .OrderByDescending(u => u.UserId)
+                .FirstOrDefault();
+
+            int newNumericPart = 1;
+            if (lastTeacher != null) {
+                string? numericPart = lastTeacher.UserId.Substring(lastTeacher.UserId.IndexOf('-') + 1);
+                newNumericPart = int.Parse(numericPart) + 1;
+            }
+
+            string userId = "A-" + newNumericPart.ToString("D3");
+            (userId, string name, string password) = CreateUser(createTeacherPrompt, userId);
+
+            if (userId != null && name != null && password != null) {
+                Teacher newTeacher = new Teacher {
+                    UserId = userId,
+                    Name = name,
+                    Password = password
+                };
+
+                _context.Add(newTeacher);
+                _context.SaveChanges();
+
+                AnsiConsole.Markup("\n[underline green]Teacher Created Successfully[/]");
+            }
+            Utils.WaitForKeyPress();
         }
         public static void CreateStudent() {
-            Console.Clear();
-            Console.WriteLine(createStudentPrompt);
-            Console.WriteLine("Create Student");
-            Console.ReadKey(true);
+            Student? lastStudent = _context.Student
+                .OrderByDescending(u => u.UserId)
+                .FirstOrDefault();
+
+            int newNumericPart = 1;
+            if (lastStudent != null) {
+                string numericPart = lastStudent.UserId.Substring(lastStudent.UserId.IndexOf('-') + 1);
+                newNumericPart = int.Parse(numericPart) + 1;
+            }
+
+            string userId = "A-" + newNumericPart.ToString("D3");
+            (userId, string name, string password) = CreateUser(createStudentPrompt, userId);
+
+            if (userId != null && name != null && password != null) {
+                Student newStudent = new Student {
+                    UserId = userId,
+                    Name = name,
+                    Password = password
+                };
+
+                _context.Add(newStudent);
+                _context.SaveChanges();
+
+                AnsiConsole.Markup("\n[underline green]Student Created Successfully[/]");
+            }
+            Utils.WaitForKeyPress();
         }
         public static void CreateCourse(ApplicationDbContext context) {
             Console.Clear();
