@@ -41,11 +41,11 @@ namespace CourseManagement.Dashboards {
                     Render();
                     break;
                 case 1:
-                    AdminMethods.CreateTeacher(_context);
+                    AdminMethods.CreateTeacher();
                     Render();
                     break;
                 case 2:
-                    AdminMethods.CreateStudent(_context);
+                    AdminMethods.CreateStudent();
                     Render();
                     break;
                 case 3:

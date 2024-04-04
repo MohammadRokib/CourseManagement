@@ -127,12 +127,8 @@ namespace CourseManagement {
                 }
 
                 if (user != null) {
-                    if (user is Admin adminUser && adminUser.Password == password) {
-                        return (true, adminUser.UserId);
-                    } else if (user is Teacher teacherUser && teacherUser.Password == password) {
-                        return (true, teacherUser.UserId);
-                    } else if (user is Student studentUser && studentUser.Password == password) {
-                        return (true, studentUser.UserId);
+                    if (user.Password == password) {
+                        return (true, user.UserId);
                     } else {
                         return (false, null);
                     }

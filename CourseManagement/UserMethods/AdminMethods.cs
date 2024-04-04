@@ -137,13 +137,13 @@ namespace CourseManagement.UserMethods {
             }
             Utils.WaitForKeyPress();
         }
-        public static void CreateTeacher(ApplicationDbContext context) {
+        public static void CreateTeacher() {
             Console.Clear();
             Console.WriteLine(createTeacherPrompt);
             Console.WriteLine("Create Teacher");
             Console.ReadKey(true);
         }
-        public static void CreateStudent(ApplicationDbContext context) {
+        public static void CreateStudent() {
             Console.Clear();
             Console.WriteLine(createStudentPrompt);
             Console.WriteLine("Create Student");
