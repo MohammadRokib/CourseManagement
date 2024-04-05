@@ -5,6 +5,9 @@
 
             App myApp = new App(context);
             myApp.Start();
+
+            /*Spectre s = new Spectre();
+            s.SpectreHello();*/
         }
     }
 }

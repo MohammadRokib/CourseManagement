@@ -1,4 +1,5 @@
 ﻿using CourseManagement.Entities;
+using CourseManagement.Enums;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,15 @@ namespace CourseManagement.UserMethods {
                                                                                                        
                                                                                                        
 ";
+        private static string scheduleClassPrompt = @"
+███████  ██████ ██   ██ ███████ ██████  ██    ██ ██      ███████      ██████ ██       █████  ███████ ███████ 
+██      ██      ██   ██ ██      ██   ██ ██    ██ ██      ██          ██      ██      ██   ██ ██      ██      
+███████ ██      ███████ █████   ██   ██ ██    ██ ██      █████       ██      ██      ███████ ███████ ███████ 
+     ██ ██      ██   ██ ██      ██   ██ ██    ██ ██      ██          ██      ██      ██   ██      ██      ██ 
+███████  ██████ ██   ██ ███████ ██████   ██████  ███████ ███████      ██████ ███████ ██   ██ ███████ ███████ 
+                                                                                                             
+                                                                                                             
+";
         private static string assignTeacherPrompt = @"
  █████  ███████ ███████ ██  ██████  ███    ██     ████████ ███████  █████   ██████ ██   ██ ███████ ██████  
 ██   ██ ██      ██      ██ ██       ████   ██        ██    ██      ██   ██ ██      ██   ██ ██      ██   ██ 
@@ -68,6 +78,18 @@ namespace CourseManagement.UserMethods {
         public static (string?, string?, string?) CreateUser(string userPrompt, string userId) {
             Console.Clear();
             Console.WriteLine(userPrompt);
+
+            switch (userId[0]) {
+                case 'A':
+                    PrintUser(UserType.Admin);
+                    break;
+                case 'S':
+                    PrintUser(UserType.Student);
+                    break;
+                case 'T':
+                    PrintUser(UserType.Teacher);
+                    break;
+            }
 
             (int left, int top) = Console.GetCursorPosition();
             Console.WriteLine("Press Enter to continue or Esc to go back");
@@ -107,6 +129,48 @@ namespace CourseManagement.UserMethods {
             AnsiConsole.Markup("\n\n[underline red]Something went wrong. Try again[/]");
             Console.ReadKey(true);
             return (null, null, null);
+        }
+        public static void PrintUser(UserType userType) {
+            List<Admin> admins = new List<Admin>();
+            List<Student> students = new List<Student>();
+            List<Teacher> teachers = new List<Teacher>();
+
+            switch (userType) {
+                case UserType.Admin:
+                    admins = _context.Admins.ToList();
+                    break;
+                case UserType.Teacher:
+                    teachers = _context.Teachers.ToList();
+                    break;
+                case UserType.Student:
+                    students = _context.Student.ToList();
+                    break;
+            }
+
+            var table = new Table();
+            table.Border = TableBorder.HeavyHead;
+
+            table.AddColumn(new TableColumn("[green]ID[/]").Centered());
+            table.AddColumn(new TableColumn("[green]Name[/]").Centered());
+
+            if (students != null) {
+                foreach(Student student in students) {
+                    table.AddRow($"{student.UserId}", $"{student.Name}");
+                }
+            }
+            if (teachers != null) {
+                foreach (Teacher teacher in teachers) {
+                    table.AddRow($"{teacher.UserId}", $"{teacher.Name}");
+                }
+            }
+            if (admins != null) {
+                foreach (Admin admin in admins) {
+                    table.AddRow($"{admin.UserId}", $"{admin.Name}");
+                }
+            }
+
+            AnsiConsole.Write(table);
+            Console.WriteLine();
         }
 
         public static void CreateAdmin() {
@@ -148,7 +212,7 @@ namespace CourseManagement.UserMethods {
                 newNumericPart = int.Parse(numericPart) + 1;
             }
 
-            string userId = "A-" + newNumericPart.ToString("D3");
+            string userId = "T-" + newNumericPart.ToString("D3");
             (userId, string name, string password) = CreateUser(createTeacherPrompt, userId);
 
             if (userId != null && name != null && password != null) {
@@ -176,7 +240,7 @@ namespace CourseManagement.UserMethods {
                 newNumericPart = int.Parse(numericPart) + 1;
             }
 
-            string userId = "A-" + newNumericPart.ToString("D3");
+            string userId = "S-" + newNumericPart.ToString("D3");
             (userId, string name, string password) = CreateUser(createStudentPrompt, userId);
 
             if (userId != null && name != null && password != null) {
@@ -197,6 +261,12 @@ namespace CourseManagement.UserMethods {
             Console.Clear();
             Console.WriteLine(createCoursePrompt);
             Console.WriteLine("Create Course");
+            Console.ReadKey(true);
+        }
+        public static void ScheduleClass() {
+            Console.Clear();
+            Console.WriteLine(scheduleClassPrompt);
+            Console.WriteLine("Schedule Class");
             Console.ReadKey(true);
         }
         public static void AssignTeacher(ApplicationDbContext context) {

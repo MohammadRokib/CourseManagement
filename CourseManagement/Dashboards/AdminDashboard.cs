@@ -27,6 +27,7 @@ namespace CourseManagement.Dashboards {
                 "Create Teacher",
                 "Create Student",
                 "Create Course",
+                "Schedule Class",
                 "Assign Teacher to course",
                 "Enroll Student to course",
                 "Logout"
@@ -53,14 +54,18 @@ namespace CourseManagement.Dashboards {
                     Render();
                     break;
                 case 4:
-                    AdminMethods.AssignTeacher(_context);
+                    AdminMethods.ScheduleClass();
                     Render();
                     break;
                 case 5:
-                    AdminMethods.EnrollStudent(_context);
+                    AdminMethods.AssignTeacher(_context);
                     Render();
                     break;
                 case 6:
+                    AdminMethods.EnrollStudent(_context);
+                    Render();
+                    break;
+                case 7:
                     MyApp.Start();
                     Render();
                     break;
