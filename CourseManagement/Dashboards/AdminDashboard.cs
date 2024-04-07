@@ -50,7 +50,7 @@ namespace CourseManagement.Dashboards {
                     Render();
                     break;
                 case 3:
-                    AdminMethods.CreateCourse(_context);
+                    AdminMethods.CreateCourse();
                     Render();
                     break;
                 case 4:

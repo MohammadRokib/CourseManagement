@@ -23,11 +23,17 @@ namespace CourseManagement {
             base.OnConfiguring(optionsBuilder);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<Teacher>()
+                .HasMany(x => x.AssignedCourses)
+                .WithOne(y => y.Instructor)
+                .HasForeignKey(z => z.InstructorId);
+
             base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
-        public DbSet<Student> Student { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Course> Courses { get; set; }
     }
 }

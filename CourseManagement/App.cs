@@ -121,7 +121,7 @@ namespace CourseManagement {
                             .FirstOrDefault();
                         break;
                     case 'S':
-                        user = _context.Student.Where(x => x.UserId == userid)
+                        user = _context.Students.Where(x => x.UserId == userid)
                             .FirstOrDefault();
                         break;
                 }
@@ -129,8 +129,6 @@ namespace CourseManagement {
                 if (user != null) {
                     if (user.Password == password) {
                         return (true, user.UserId);
-                    } else {
-                        return (false, null);
                     }
                 }
             }

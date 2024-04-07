@@ -1,11 +1,14 @@
 ﻿using CourseManagement.Entities;
 using CourseManagement.Enums;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace CourseManagement.UserMethods {
     public class AdminMethods {
@@ -143,7 +146,7 @@ namespace CourseManagement.UserMethods {
                     teachers = _context.Teachers.ToList();
                     break;
                 case UserType.Student:
-                    students = _context.Student.ToList();
+                    students = _context.Students.ToList();
                     break;
             }
 
@@ -166,6 +169,40 @@ namespace CourseManagement.UserMethods {
             if (admins != null) {
                 foreach (Admin admin in admins) {
                     table.AddRow($"{admin.UserId}", $"{admin.Name}");
+                }
+            }
+
+            AnsiConsole.Write(table);
+            Console.WriteLine();
+        }
+
+        public static void PrintCourses() {
+            List<Course> courses = _context.Courses
+                .Include(c => c.Instructor)
+                .ToList();
+
+            var table = new Table();
+            table.Border = TableBorder.HeavyHead;
+
+            table.AddColumn(new TableColumn("[green]Course ID[/]").Centered());
+            table.AddColumn(new TableColumn("[green]Course Name[/]").Centered());
+            table.AddColumn(new TableColumn("[green]Course Instructor[/]").Centered());
+            table.AddColumn(new TableColumn("[green]Schedule[/]").Centered());
+            table.AddColumn(new TableColumn("[green]Course Fee[/]").Centered());
+
+            if (courses != null) {
+                foreach(Course course in courses) {
+                    string? instructorName = " ";
+                    if (course.Instructor != null)
+                        instructorName = course.Instructor.Name;
+
+                    table.AddRow(
+                        $"{course.CourseId}",
+                        $"{course.CourseName}",
+                        $"{instructorName}",
+                        $"{course.Schedule}",
+                        $"{course.CourseFee}"
+                    );
                 }
             }
 
@@ -230,7 +267,7 @@ namespace CourseManagement.UserMethods {
             Utils.WaitForKeyPress();
         }
         public static void CreateStudent() {
-            Student? lastStudent = _context.Student
+            Student? lastStudent = _context.Students
                 .OrderByDescending(u => u.UserId)
                 .FirstOrDefault();
 
@@ -257,11 +294,57 @@ namespace CourseManagement.UserMethods {
             }
             Utils.WaitForKeyPress();
         }
-        public static void CreateCourse(ApplicationDbContext context) {
+        public static void CreateCourse() {
             Console.Clear();
             Console.WriteLine(createCoursePrompt);
-            Console.WriteLine("Create Course");
-            Console.ReadKey(true);
+
+            PrintCourses();
+
+            Course? lastCourse = _context.Courses
+                .OrderByDescending(c => c.CourseId)
+                .FirstOrDefault();
+
+            int newNumericPart = 1;
+            if (lastCourse != null) {
+                string numericPart = lastCourse.CourseId.Substring(lastCourse.CourseId.IndexOf('-') + 1);
+                newNumericPart = int.Parse(numericPart) + 1;
+            }
+            string courseId = "C-" + newNumericPart.ToString("D3");
+
+            (int left, int top) = Console.GetCursorPosition();
+            Console.WriteLine("Press Enter to continue or Esc to go back");
+            ConsoleKeyInfo confirmationKey = Console.ReadKey(true);
+
+            switch (confirmationKey.Key) {
+                case ConsoleKey.Enter:
+                    Console.SetCursorPosition(left, top);
+                    Console.Write(new string(' ', Console.WindowWidth));
+                    Console.SetCursorPosition(left, top);
+                    break;
+                case ConsoleKey.Escape:
+                    return;
+                default:
+                    CreateCourse();
+                    break;
+            }
+
+            AnsiConsole.Markup($"[green]CourseId[/]: [grey]{courseId}[/]\n");
+            string courseName = AnsiConsole.Ask<string>("[green]Course Name[/]:");
+            double courseFees = AnsiConsole.Ask<double>("[green]Course Fee[/]:");
+
+            if (courseId != null && courseName != null && courseFees > 0) {
+                Course newCourse = new Course {
+                    CourseId = courseId,
+                    CourseName = courseName,
+                    CourseFee = courseFees
+                };
+
+                _context.Add(newCourse);
+                _context.SaveChanges();
+
+                AnsiConsole.Markup("\n[underline green]Course Created Successfully[/]");
+            }
+            Utils.WaitForKeyPress();
         }
         public static void ScheduleClass() {
             Console.Clear();
