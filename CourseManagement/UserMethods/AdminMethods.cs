@@ -79,9 +79,7 @@ namespace CourseManagement.UserMethods {
 ";
 
         public static (string?, string?, string?) CreateUser(string userPrompt, string userId) {
-            Console.Clear();
-            Console.WriteLine(userPrompt);
-
+            Utils.PrintPrompt(userPrompt);
             switch (userId[0]) {
                 case 'A':
                     PrintUser(UserType.Admin);
@@ -94,15 +92,11 @@ namespace CourseManagement.UserMethods {
                     break;
             }
 
-            (int left, int top) = Console.GetCursorPosition();
-            Console.WriteLine("Press Enter to continue or Esc to go back");
-            ConsoleKeyInfo confirmationKey = Console.ReadKey(true);
+            (ConsoleKeyInfo confirmationKey, int left, int top) = Utils.GetConfirmationKey();
 
             switch (confirmationKey.Key) {
                 case ConsoleKey.Enter:
-                    Console.SetCursorPosition(left, top);
-                    Console.Write(new string(' ', Console.WindowWidth));
-                    Console.SetCursorPosition(left, top);
+                    Utils.SetCursorPosition(left, top);
                     break;
                 case ConsoleKey.Escape:
                     return (null, null, null);
@@ -295,9 +289,7 @@ namespace CourseManagement.UserMethods {
             Utils.WaitForKeyPress();
         }
         public static void CreateCourse() {
-            Console.Clear();
-            Console.WriteLine(createCoursePrompt);
-
+            Utils.PrintPrompt(createCoursePrompt);
             PrintCourses();
 
             Course? lastCourse = _context.Courses
@@ -311,15 +303,10 @@ namespace CourseManagement.UserMethods {
             }
             string courseId = "C-" + newNumericPart.ToString("D3");
 
-            (int left, int top) = Console.GetCursorPosition();
-            Console.WriteLine("Press Enter to continue or Esc to go back");
-            ConsoleKeyInfo confirmationKey = Console.ReadKey(true);
-
+            (ConsoleKeyInfo confirmationKey, int left, int top) = Utils.GetConfirmationKey();
             switch (confirmationKey.Key) {
                 case ConsoleKey.Enter:
-                    Console.SetCursorPosition(left, top);
-                    Console.Write(new string(' ', Console.WindowWidth));
-                    Console.SetCursorPosition(left, top);
+                    Utils.SetCursorPosition(left, top);
                     break;
                 case ConsoleKey.Escape:
                     return;
@@ -349,6 +336,8 @@ namespace CourseManagement.UserMethods {
         public static void ScheduleClass() {
             Console.Clear();
             Console.WriteLine(scheduleClassPrompt);
+            PrintCourses();
+
             Console.WriteLine("Schedule Class");
             Console.ReadKey(true);
         }
