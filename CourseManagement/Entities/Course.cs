@@ -14,5 +14,6 @@ namespace CourseManagement.Entities
         public DateTime? Schedule { get; set; }
         public Teacher Instructor { get; set; }
         public int? InstructorId { get; set; }
+        public List<CourseRegistration> RegisteredStudents { get; set; }
     }
 }

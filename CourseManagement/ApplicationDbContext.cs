@@ -23,10 +23,27 @@ namespace CourseManagement {
             base.OnConfiguring(optionsBuilder);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<CourseRegistration>().ToTable("CourseRegistrations");
+            modelBuilder.Entity<CourseRegistration>().HasKey(x => new {x.CourseId, x.StudentId});
+
+            modelBuilder.Entity<CourseRegistration>()
+                .HasOne(x => x.Student)
+                .WithMany(y => y.EnrolledCourses)
+                .HasForeignKey(z => z.StudentId);
+
+            modelBuilder.Entity<CourseRegistration>()
+                .HasOne(x => x.Course)
+                .WithMany(y => y.RegisteredStudents)
+                .HasForeignKey(z => z.CourseId);
+
+
+
             modelBuilder.Entity<Teacher>()
                 .HasMany(x => x.AssignedCourses)
                 .WithOne(y => y.Instructor)
                 .HasForeignKey(z => z.InstructorId);
+
+
 
             base.OnModelCreating(modelBuilder);
         }

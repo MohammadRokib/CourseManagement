@@ -5,5 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CourseManagement.Entities {
-    public class Student : User {}
+    public class Student : User {
+        public List<CourseRegistration> EnrolledCourses { get; set; }
+    }
 }
