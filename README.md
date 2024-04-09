@@ -40,7 +40,6 @@
 ### Entity Relationship Diagram
 <hr><br>
 <div align="center">
-  <img src="./demo/CourseManagement_ERD.svg">
 </div>
 <br>
 
