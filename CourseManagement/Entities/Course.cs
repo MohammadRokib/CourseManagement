@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CourseManagement.Entities {
+namespace CourseManagement.Entities
+{
     public class Course {
         public int Id { get; set; }
         public string CourseId { get; set; }

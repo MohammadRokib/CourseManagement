@@ -37,6 +37,15 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Entity Relationship Diagram
+<hr><br>
+<div align="center">
+  <img src="./demo/CourseManagement_ERD.svg">
+</div>
+<br>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- CONTACT -->
 
 ## Contact

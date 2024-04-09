@@ -334,12 +334,40 @@ namespace CourseManagement.UserMethods {
             Utils.WaitForKeyPress();
         }
         public static void ScheduleClass() {
-            Console.Clear();
-            Console.WriteLine(scheduleClassPrompt);
+            Utils.PrintPrompt(scheduleClassPrompt);
             PrintCourses();
+            (ConsoleKeyInfo confirmationKey, int left, int top) = Utils.GetConfirmationKey();
 
-            Console.WriteLine("Schedule Class");
-            Console.ReadKey(true);
+            switch (confirmationKey.Key) {
+                case ConsoleKey.Enter:
+                    Utils.SetCursorPosition(left, top);
+                    break;
+                case ConsoleKey.Escape:
+                    return;
+                default:
+                    ScheduleClass();
+                    break;
+            }
+            /*Console.WriteLine(DateTime.Now);
+            string courseId = AnsiConsole.Ask<string>("[green]Course ID[/]:");
+            DateTime schedule = AnsiConsole.Ask<DateTime>("[green]Schedule[/]:");
+
+            Course? savedCourse = _context.Courses
+                .Where(c => c.CourseId == courseId)
+                .Include(c => c.Instructor)
+                .FirstOrDefault();
+
+            if (savedCourse != null) {
+                savedCourse.Schedule = schedule;
+                _context.Update(savedCourse);
+                _context.SaveChanges();
+
+                AnsiConsole.Markup("\n[underline green]Course Schedule Updated[/]");
+            } else {
+                AnsiConsole.Markup("\n[underline red]Something went wrong. Please try again[/]");
+            }*/
+
+            Utils.WaitForKeyPress();
         }
         public static void AssignTeacher(ApplicationDbContext context) {
             Console.Clear();

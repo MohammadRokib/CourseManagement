@@ -1,4 +1,6 @@
-﻿namespace CourseManagement {
+﻿using System.Globalization;
+
+namespace CourseManagement {
     internal class Program {
         static void Main(string[] args) {
             ApplicationDbContext context = new ApplicationDbContext();
