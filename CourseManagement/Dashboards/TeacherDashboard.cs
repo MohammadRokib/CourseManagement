@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CourseManagement.Entities;
+using CourseManagement.UserMethods;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,9 @@ namespace CourseManagement.Dashboards {
         public TeacherDashboard(App myApp, ApplicationDbContext context) : base(myApp, context) {
             _context = context;
         }
-        public override void Render() {
+        public override void Render(string teacherId) {
             string[] teacherOptions = {
-                "Check Attendence report",
+                "Check Attendence",
                 "Logout"
             };
 
@@ -31,7 +33,8 @@ namespace CourseManagement.Dashboards {
 
             switch (selectedIndex) {
                 case 0:
-                    CheckAttendence();
+                    TeacherMehtods.CheckAttendance(teacherId);
+                    Render(teacherId);
                     break;
                 case 1:
                     MyApp.Start();
@@ -43,7 +46,7 @@ namespace CourseManagement.Dashboards {
             Console.WriteLine(teacherPrompt);
             Console.WriteLine("Check Attendence Report");
             Console.ReadKey(true);
-            Render();
+            Render("teacherId");
         }
     }
 }

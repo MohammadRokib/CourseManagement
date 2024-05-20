@@ -13,6 +13,6 @@ namespace CourseManagement.Dashboards {
             MyApp = myapp;
             _context = context;
         }
-        virtual public void Render() {}
+        virtual public void Render(string userId) {}
     }
 }

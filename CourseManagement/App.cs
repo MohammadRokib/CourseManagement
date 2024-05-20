@@ -39,7 +39,7 @@ namespace CourseManagement {
                     break;
             }
 
-            (bool loginSuccess, string userId) = Login();
+            (bool loginSuccess, string? userId) = Login();
 
             if (!loginSuccess) {
                 Console.WriteLine("Invalid credentials. Press any key");
@@ -49,13 +49,13 @@ namespace CourseManagement {
 
             switch (userId[0]) {
                 case 'A':
-                    adminDashboard.Render();
+                    adminDashboard.Render(userId);
                     break;
                 case 'T':
-                    teacherDashboard.Render();
+                    teacherDashboard.Render(userId);
                     break;
                 case 'S':
-                    studentDashboard.Render();
+                    studentDashboard.Render(userId);
                     break;
             }
         }
@@ -79,7 +79,7 @@ namespace CourseManagement {
             return dashboardMenu.Run();
         }
 
-        public (bool, string) Login() {
+        public (bool, string?) Login() {
             Console.Clear();
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.WriteLine(loginPrompt);
@@ -109,7 +109,7 @@ namespace CourseManagement {
                 .Secret('*')
             );
 
-            User user = new User();
+            User? user = new User();
             if (userid != null && password != null) {
                 switch (userid[0]) {
                     case 'A':
@@ -130,6 +130,12 @@ namespace CourseManagement {
                     if (user.Password == password) {
                         return (true, user.UserId);
                     }
+                }
+
+                // For manual input
+                else
+                {
+                    return (true, userid);
                 }
             }
 

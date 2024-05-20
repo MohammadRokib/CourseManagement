@@ -21,7 +21,7 @@ namespace CourseManagement.Dashboards {
         public AdminDashboard(App myapp, ApplicationDbContext context) : base(myapp, context) {
             _context = context;
         }
-        public override void Render() {
+        public override void Render(string adminId) {
             string[] adminOptions = {
                 "Create Admin",
                 "Create Teacher",
@@ -30,6 +30,7 @@ namespace CourseManagement.Dashboards {
                 "Schedule Class",
                 "Assign Teacher to course",
                 "Enroll Student to course",
+                "Course Details",
                 "Logout"
             };
 
@@ -39,35 +40,39 @@ namespace CourseManagement.Dashboards {
             switch (selectedIndex) {
                 case 0:
                     AdminMethods.CreateAdmin();
-                    Render();
+                    Render(adminId);
                     break;
                 case 1:
                     AdminMethods.CreateTeacher();
-                    Render();
+                    Render(adminId);
                     break;
                 case 2:
                     AdminMethods.CreateStudent();
-                    Render();
+                    Render(adminId);
                     break;
                 case 3:
                     AdminMethods.CreateCourse();
-                    Render();
+                    Render(adminId);
                     break;
                 case 4:
                     AdminMethods.ScheduleClass();
-                    Render();
+                    Render(adminId);
                     break;
                 case 5:
-                    AdminMethods.AssignTeacher(_context);
-                    Render();
+                    AdminMethods.AssignTeacher();
+                    Render(adminId);
                     break;
                 case 6:
-                    AdminMethods.EnrollStudent(_context);
-                    Render();
+                    AdminMethods.EnrollStudent();
+                    Render(adminId);
                     break;
                 case 7:
+                    AdminMethods.CourseDetails();
+                    Render(adminId);
+                    break;
+                case 8:
                     MyApp.Start();
-                    Render();
+                    Render(adminId);
                     break;
 
             }

@@ -10,6 +10,9 @@ namespace CourseManagement {
 
             /*Spectre s = new Spectre();
             s.SpectreHello();*/
+
+            /*Test test = new Test();
+            test.Solution();*/
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CourseManagement.UserMethods;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,10 +21,9 @@ namespace CourseManagement.Dashboards {
         public StudentDashboard(App myApp, ApplicationDbContext context) : base(myApp, context) {
             _context = context;
         }
-        public override void Render() {
+        public override void Render(string studentId) {
             string[] studentOptions = {
                 "Give attendence",
-                "Check attendence",
                 "Logout"
             };
 
@@ -32,30 +32,13 @@ namespace CourseManagement.Dashboards {
 
             switch (selectedIndex) {
                 case 0:
-                    GiveAttendence();
+                    StudentMethods.GiveAttendance(studentId);
+                    Render(studentId);
                     break;
                 case 1:
-                    CheckAttendence();
-                    break;
-                case 2:
                     MyApp.Start();
                     break;
             }
-        }
-
-        private void GiveAttendence() {
-            Console.Clear();
-            Console.WriteLine(studentPrompt);
-            Console.WriteLine("Give Attendence");
-            Console.ReadKey(true);
-            Render();
-        }
-        private void CheckAttendence() {
-            Console.Clear();
-            Console.WriteLine(studentPrompt);
-            Console.WriteLine("Check Attendence");
-            Console.ReadKey(true);
-            Render();
         }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourseManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240407091616_AddNullableCourseSchedule")]
-    partial class AddNullableCourseSchedule
+    [Migration("20240509083613_AddTables")]
+    partial class AddTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,17 +69,41 @@ namespace CourseManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("InstructorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("Schedule")
+                    b.Property<string>("Schedule")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Weekdays")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("InstructorId");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.CourseRegistration", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CourseId", "StudentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("CourseRegistrations", (string)null);
                 });
 
             modelBuilder.Entity("CourseManagement.Entities.Student", b =>
@@ -139,6 +163,35 @@ namespace CourseManagement.Migrations
                         .HasForeignKey("InstructorId");
 
                     b.Navigation("Instructor");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.CourseRegistration", b =>
+                {
+                    b.HasOne("CourseManagement.Entities.Course", "Course")
+                        .WithMany("RegisteredStudents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CourseManagement.Entities.Student", "Student")
+                        .WithMany("EnrolledCourses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.Course", b =>
+                {
+                    b.Navigation("RegisteredStudents");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.Student", b =>
+                {
+                    b.Navigation("EnrolledCourses");
                 });
 
             modelBuilder.Entity("CourseManagement.Entities.Teacher", b =>
