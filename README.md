@@ -37,6 +37,10 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Installation
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Entity Relationship Diagram
 <hr><br>
 <div align="center">
