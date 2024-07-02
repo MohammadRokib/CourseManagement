@@ -13,8 +13,12 @@ namespace CourseManagement {
         private readonly string _migrationAssembly;
 
         public ApplicationDbContext() {
+            // ConnectionString Home PC
+            _connectionString = "Server=(localdb)\\MSSQLLocalDB; Database=CourseManagement; Trusted_Connection=True";
+
+            // ConnectionString Work PC
             // _connectionString = "Server=RONY; Database=CourseManagement; Uid=LEADSOFT\\rokib.khan Trusted_Connection=True";
-            _connectionString = "Server=RONY; Database=CourseManagement; Uid=SA; Pwd=leads@2024; Encrypt=False";
+            // _connectionString = "Server=RONY; Database=CourseManagement; Uid=SA; Pwd=leads@2024; Encrypt=False";
             _migrationAssembly = Assembly.GetExecutingAssembly().GetName().Name;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
