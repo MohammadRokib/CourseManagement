@@ -47,6 +47,24 @@ namespace CourseManagement.Migrations
                     b.ToTable("Admins");
                 });
 
+            modelBuilder.Entity("CourseManagement.Entities.Attendance", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("StudentId", "CourseId", "Date");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Attendances");
+                });
+
             modelBuilder.Entity("CourseManagement.Entities.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -66,17 +84,41 @@ namespace CourseManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("InstructorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("Schedule")
+                    b.Property<string>("Schedule")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Weekdays")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("InstructorId");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.CourseRegistration", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CourseId", "StudentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("CourseRegistrations", (string)null);
                 });
 
             modelBuilder.Entity("CourseManagement.Entities.Student", b =>
@@ -129,6 +171,25 @@ namespace CourseManagement.Migrations
                     b.ToTable("Teachers");
                 });
 
+            modelBuilder.Entity("CourseManagement.Entities.Attendance", b =>
+                {
+                    b.HasOne("CourseManagement.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CourseManagement.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("CourseManagement.Entities.Course", b =>
                 {
                     b.HasOne("CourseManagement.Entities.Teacher", "Instructor")
@@ -136,6 +197,35 @@ namespace CourseManagement.Migrations
                         .HasForeignKey("InstructorId");
 
                     b.Navigation("Instructor");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.CourseRegistration", b =>
+                {
+                    b.HasOne("CourseManagement.Entities.Course", "Course")
+                        .WithMany("RegisteredStudents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CourseManagement.Entities.Student", "Student")
+                        .WithMany("EnrolledCourses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.Course", b =>
+                {
+                    b.Navigation("RegisteredStudents");
+                });
+
+            modelBuilder.Entity("CourseManagement.Entities.Student", b =>
+                {
+                    b.Navigation("EnrolledCourses");
                 });
 
             modelBuilder.Entity("CourseManagement.Entities.Teacher", b =>

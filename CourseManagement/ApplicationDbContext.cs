@@ -13,7 +13,8 @@ namespace CourseManagement {
         private readonly string _migrationAssembly;
 
         public ApplicationDbContext() {
-            _connectionString = "Server=(localdb)\\MSSQLLocalDB; Database=CourseManagement; Trusted_Connection=True";
+            // _connectionString = "Server=RONY; Database=CourseManagement; Uid=LEADSOFT\\rokib.khan Trusted_Connection=True";
+            _connectionString = "Server=RONY; Database=CourseManagement; Uid=SA; Pwd=leads@2024; Encrypt=False";
             _migrationAssembly = Assembly.GetExecutingAssembly().GetName().Name;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
@@ -23,6 +24,9 @@ namespace CourseManagement {
             base.OnConfiguring(optionsBuilder);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            // modelBuilder.Entity<Attendance>().ToTable("Attendances");
+            modelBuilder.Entity<Attendance>().HasKey(x => new { x.StudentId, x.CourseId, x.Date });
+
             modelBuilder.Entity<CourseRegistration>().ToTable("CourseRegistrations");
             modelBuilder.Entity<CourseRegistration>().HasKey(x => new {x.CourseId, x.StudentId});
 
@@ -36,15 +40,10 @@ namespace CourseManagement {
                 .WithMany(y => y.RegisteredStudents)
                 .HasForeignKey(z => z.CourseId);
 
-            modelBuilder.Entity<Schedule>()
-                .HasOne(x => x.)
-
             modelBuilder.Entity<Teacher>()
                 .HasMany(x => x.AssignedCourses)
                 .WithOne(y => y.Instructor)
                 .HasForeignKey(z => z.InstructorId);
-
-
 
             base.OnModelCreating(modelBuilder);
         }
@@ -53,5 +52,6 @@ namespace CourseManagement {
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
     }
 }

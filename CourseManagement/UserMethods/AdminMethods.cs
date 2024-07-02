@@ -77,18 +77,27 @@ namespace CourseManagement.UserMethods {
                                                                                                                     
                                                                                                                     
 ";
+        private static string courseDetailsPrompt = @"
+ ██████  ██████  ██    ██ ██████  ███████ ███████     ██████  ███████ ████████  █████  ██ ██      ███████ 
+██      ██    ██ ██    ██ ██   ██ ██      ██          ██   ██ ██         ██    ██   ██ ██ ██      ██      
+██      ██    ██ ██    ██ ██████  ███████ █████       ██   ██ █████      ██    ███████ ██ ██      ███████ 
+██      ██    ██ ██    ██ ██   ██      ██ ██          ██   ██ ██         ██    ██   ██ ██ ██           ██ 
+ ██████  ██████   ██████  ██   ██ ███████ ███████     ██████  ███████    ██    ██   ██ ██ ███████ ███████ 
+                                                                                                          
+                                                                                                          
+";
 
         public static (string?, string?, string?) CreateUser(string userPrompt, string userId) {
             Utils.PrintPrompt(userPrompt);
             switch (userId[0]) {
                 case 'A':
-                    PrintUser(UserType.Admin);
+                    Utils.PrintUsers(UserType.Admin, _context);
                     break;
                 case 'S':
-                    PrintUser(UserType.Student);
+                    Utils.PrintUsers(UserType.Student, _context);
                     break;
                 case 'T':
-                    PrintUser(UserType.Teacher);
+                    Utils.PrintUsers(UserType.Teacher, _context);
                     break;
             }
 
@@ -124,86 +133,10 @@ namespace CourseManagement.UserMethods {
             }
 
             AnsiConsole.Markup("\n\n[underline red]Something went wrong. Try again[/]");
-            Console.ReadKey(true);
             return (null, null, null);
         }
-        public static void PrintUser(UserType userType) {
-            List<Admin> admins = new List<Admin>();
-            List<Student> students = new List<Student>();
-            List<Teacher> teachers = new List<Teacher>();
 
-            switch (userType) {
-                case UserType.Admin:
-                    admins = _context.Admins.ToList();
-                    break;
-                case UserType.Teacher:
-                    teachers = _context.Teachers.ToList();
-                    break;
-                case UserType.Student:
-                    students = _context.Students.ToList();
-                    break;
-            }
-
-            var table = new Table();
-            table.Border = TableBorder.HeavyHead;
-
-            table.AddColumn(new TableColumn("[green]ID[/]").Centered());
-            table.AddColumn(new TableColumn("[green]Name[/]").Centered());
-
-            if (students != null) {
-                foreach(Student student in students) {
-                    table.AddRow($"{student.UserId}", $"{student.Name}");
-                }
-            }
-            if (teachers != null) {
-                foreach (Teacher teacher in teachers) {
-                    table.AddRow($"{teacher.UserId}", $"{teacher.Name}");
-                }
-            }
-            if (admins != null) {
-                foreach (Admin admin in admins) {
-                    table.AddRow($"{admin.UserId}", $"{admin.Name}");
-                }
-            }
-
-            AnsiConsole.Write(table);
-            Console.WriteLine();
-        }
-
-        public static void PrintCourses() {
-            List<Course> courses = _context.Courses
-                .Include(c => c.Instructor)
-                .ToList();
-
-            var table = new Table();
-            table.Border = TableBorder.HeavyHead;
-
-            table.AddColumn(new TableColumn("[green]Course ID[/]").Centered());
-            table.AddColumn(new TableColumn("[green]Course Name[/]").Centered());
-            table.AddColumn(new TableColumn("[green]Course Instructor[/]").Centered());
-            table.AddColumn(new TableColumn("[green]Schedule[/]").Centered());
-            table.AddColumn(new TableColumn("[green]Course Fee[/]").Centered());
-
-            if (courses != null) {
-                foreach(Course course in courses) {
-                    string? instructorName = " ";
-                    if (course.Instructor != null)
-                        instructorName = course.Instructor.Name;
-
-                    table.AddRow(
-                        $"{course.CourseId}",
-                        $"{course.CourseName}",
-                        $"{instructorName}",
-                        $"{course.Schedule}",
-                        $"{course.CourseFee}"
-                    );
-                }
-            }
-
-            AnsiConsole.Write(table);
-            Console.WriteLine();
-        }
-
+        
         public static void CreateAdmin() {
             Admin? lastAdmin = _context.Admins
                 .OrderByDescending(u => u.UserId)
@@ -232,6 +165,7 @@ namespace CourseManagement.UserMethods {
             }
             Utils.WaitForKeyPress();
         }
+
         public static void CreateTeacher() {
             Teacher? lastTeacher = _context.Teachers
                 .OrderByDescending(u => u.UserId)
@@ -260,6 +194,7 @@ namespace CourseManagement.UserMethods {
             }
             Utils.WaitForKeyPress();
         }
+
         public static void CreateStudent() {
             Student? lastStudent = _context.Students
                 .OrderByDescending(u => u.UserId)
@@ -288,9 +223,10 @@ namespace CourseManagement.UserMethods {
             }
             Utils.WaitForKeyPress();
         }
+
         public static void CreateCourse() {
             Utils.PrintPrompt(createCoursePrompt);
-            PrintCourses();
+            Utils.PrintCourses(_context);
 
             Course? lastCourse = _context.Courses
                 .OrderByDescending(c => c.CourseId)
@@ -317,25 +253,34 @@ namespace CourseManagement.UserMethods {
 
             AnsiConsole.Markup($"[green]CourseId[/]: [grey]{courseId}[/]\n");
             string courseName = AnsiConsole.Ask<string>("[green]Course Name[/]:");
-            double courseFees = AnsiConsole.Ask<double>("[green]Course Fee[/]:");
+            double courseFees = AnsiConsole.Ask<double>("[green]Course Fee[/]: ৳");
 
             if (courseId != null && courseName != null && courseFees > 0) {
                 Course newCourse = new Course {
                     CourseId = courseId,
                     CourseName = courseName,
-                    CourseFee = courseFees
+                    CourseFee = courseFees,
                 };
 
-                _context.Add(newCourse);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Add(newCourse);
+                    _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Something went wrong");
+                    Console.WriteLine(ex.ToString());
+                }
 
                 AnsiConsole.Markup("\n[underline green]Course Created Successfully[/]");
             }
             Utils.WaitForKeyPress();
         }
+
         public static void ScheduleClass() {
             Utils.PrintPrompt(scheduleClassPrompt);
-            PrintCourses();
+            Utils.PrintCourses(_context);
             (ConsoleKeyInfo confirmationKey, int left, int top) = Utils.GetConfirmationKey();
 
             switch (confirmationKey.Key) {
@@ -348,38 +293,279 @@ namespace CourseManagement.UserMethods {
                     ScheduleClass();
                     break;
             }
-            /*Console.WriteLine(DateTime.Now);
+
             string courseId = AnsiConsole.Ask<string>("[green]Course ID[/]:");
-            DateTime schedule = AnsiConsole.Ask<DateTime>("[green]Schedule[/]:");
 
             Course? savedCourse = _context.Courses
                 .Where(c => c.CourseId == courseId)
-                .Include(c => c.Instructor)
+                .Include(i => i.Instructor)
+                .Include(rs => rs.RegisteredStudents)
+                .ThenInclude(rss => rss.Student)
                 .FirstOrDefault();
+            
+            if (savedCourse == null)
+            {
+                AnsiConsole.Markup("\n[underline red]Invalid Course Id. Try again[/]");
+            }
+            else
+            {
+                int classes = AnsiConsole.Ask<int>("[green]Classes in a week[/]:");
+                List<string> weekDays = new List<string>();
+                for (int i=1; i<=classes; i++)
+                {
+                    string weekDay = AnsiConsole.Ask<string>($"[green]  Day {i}[/]:");
+                    weekDays.Add(weekDay);
+                }
+                savedCourse.Weekdays = weekDays;
 
-            if (savedCourse != null) {
+                string startTimeString = AnsiConsole.Ask<string>("[green]  Class start time:[/]");
+                DateTime startTime = DateTime.Parse(startTimeString);
+                savedCourse.StartTime = startTime;
+
+                string endTimeString = AnsiConsole.Ask<string>("[green]  Class end   time:[/]");
+                DateTime endTime = DateTime.Parse(endTimeString);
+                savedCourse.EndTime = endTime;
+
+                string? schedule = null;
+                foreach (string weekDay in weekDays) { schedule += (weekDay + " "); }
+                schedule += (startTimeString + " - " + endTimeString);
+
                 savedCourse.Schedule = schedule;
-                _context.Update(savedCourse);
-                _context.SaveChanges();
 
-                AnsiConsole.Markup("\n[underline green]Course Schedule Updated[/]");
-            } else {
-                AnsiConsole.Markup("\n[underline red]Something went wrong. Please try again[/]");
-            }*/
+                try {
+                    _context.Update(savedCourse);
+                    _context.SaveChanges();
+                } catch (Exception ex) { 
+                    AnsiConsole.Markup("\n[underline red]Something went wrong. Try again[/]");
+                    Console.WriteLine(ex.ToString());
+                }
+            }
 
             Utils.WaitForKeyPress();
         }
-        public static void AssignTeacher(ApplicationDbContext context) {
-            Console.Clear();
-            Console.WriteLine(assignTeacherPrompt);
-            Console.WriteLine("Assign Teacher to Course");
-            Console.ReadKey(true);
+
+        public static void AssignTeacher() {
+            Utils.PrintPrompt(assignTeacherPrompt);
+            Utils.PrintCourses(_context);
+            (ConsoleKeyInfo confirmationKey, int left, int top) = Utils.GetConfirmationKey();
+
+            switch(confirmationKey.Key)
+            {
+                case ConsoleKey.Enter:
+                    Utils.SetCursorPosition(left, top);
+                    break;
+                case ConsoleKey.Escape:
+                    return;
+                default:
+                    AssignTeacher();
+                    break;
+            }
+
+            string courseId = AnsiConsole.Ask<string>("[green]Course ID:[/]");
+            Course? course = _context.Courses
+                .Where(c => c.CourseId == courseId)
+                .FirstOrDefault();
+
+            if (course == null)
+            {
+                AnsiConsole.Markup("\n[underline red]Invalid Course ID[/]");
+                Utils.WaitForKeyPress();
+                AssignTeacher();
+            } else if (course.Schedule == null)
+            {
+                AnsiConsole.Markup("\n[underline red]Course is not scheduled yet[/]");
+                Utils.WaitForKeyPress();
+                AssignTeacher();
+            }
+            else
+            {
+                AnsiConsole.Markup("\n[blue]Available teachers\n[/]");
+                Utils.PrintUsers(UserType.Teacher, _context);
+
+                string teacherId = AnsiConsole.Ask<string>("[green]Teacher ID:[/]");
+                Teacher? teacher = _context.Teachers
+                    .Where(t => t.UserId == teacherId)
+                    //.Include(x => x.AssignedCourses)
+                    .FirstOrDefault();
+
+                if (teacher == null)
+                {
+                    AnsiConsole.Markup("\n[underline red]Invalid Teacher ID\n[/]");
+                    Utils.WaitForKeyPress();
+                    AssignTeacher();
+                }
+                if (!Utils.TeacherAvailable(teacher, course))
+                {
+                    AnsiConsole.Markup("\n[underline red]Teacher not available for this course[/]");
+                    Utils.WaitForKeyPress();
+                    AssignTeacher();
+                } else
+                {
+                    course.InstructorId = teacher.Id;
+                    course.Instructor = teacher;
+
+                    _context.Update(teacher);
+                    _context.Update(course);
+                    _context.SaveChanges();
+
+                    AnsiConsole.Markup("\n[underline green]Teacher successfully assigned to course.[/]");
+                }
+            }
+
+            Utils.WaitForKeyPress();
+            return;
         }
-        public static void EnrollStudent(ApplicationDbContext context) {
-            Console.Clear();
-            Console.WriteLine(enrollStudentPrompt);
-            Console.WriteLine("Enroll Student to Course");
-            Console.ReadKey(true);
+
+        public static void EnrollStudent() {
+            Utils.PrintPrompt(enrollStudentPrompt);
+            Utils.PrintCourses(_context);
+            (ConsoleKeyInfo confirmationKey, int left, int top) = Utils.GetConfirmationKey();
+
+            switch(confirmationKey.Key)
+            {
+                case ConsoleKey.Enter:
+                    Utils.SetCursorPosition(left, top);
+                    break;
+                case ConsoleKey.Escape:
+                    return;
+                default:
+                    EnrollStudent();
+                    break;
+            }
+
+            string courseId = AnsiConsole.Ask<string>("[green]Course ID:[/]");
+            Course? course = _context.Courses
+                .Where(c => c.CourseId == courseId)
+                .Include(x => x.RegisteredStudents)
+                .ThenInclude(y => y.Student)
+                .FirstOrDefault();
+
+            if (course == null)
+            {
+                AnsiConsole.Markup("\n[underline red]Invalid Course ID[/]");
+                Utils.WaitForKeyPress();
+                EnrollStudent();
+            }
+            else if (course.Schedule == null) {
+                AnsiConsole.Markup("\n[underline red]Course is not scheduled yet[/]");
+                Utils.WaitForKeyPress();
+                EnrollStudent();
+            }
+            else
+            {
+                AnsiConsole.Markup("\n[blue]Select student to enroll\n[/]");
+                Utils.PrintUsers(UserType.Student, _context);
+
+                string studentId = AnsiConsole.Ask<string>("[green]Student ID:[/]");
+                Student? student = _context.Students
+                    .Where(s => s.UserId == studentId)
+                    .Include(x => x.EnrolledCourses)
+                    .ThenInclude(y => y.Course)
+                    .FirstOrDefault();
+
+                if (student == null)
+                {
+                    AnsiConsole.Markup("\n[underline red]Invalid Student ID[/]");
+                    Utils.WaitForKeyPress();
+                    EnrollStudent();
+                }
+                else if (!Utils.StudentAvailable(student, course))
+                {
+                    AnsiConsole.Markup("\n[underline red]Student has another course at this time[/]");
+                    Utils.WaitForKeyPress();
+                    EnrollStudent();
+                }
+                else
+                {
+                    CourseRegistration newCourseRegistration = new CourseRegistration
+                    {
+                        CourseId = course.Id,
+                        Course = course,
+                        StudentId = student.Id,
+                        Student = student
+                    };
+
+                    course.RegisteredStudents.Add(newCourseRegistration);
+                    student.EnrolledCourses.Add(newCourseRegistration);
+
+                    try {
+                        _context.Update(course);
+                        _context.Update(student);
+                        _context.SaveChanges();
+
+                        AnsiConsole.Markup("\n[underline green]Student enrolled to course successfully[/]");
+                    } catch (Exception ex) {
+                        Console.WriteLine("Something went wrong");
+                        Console.WriteLine(ex.ToString());
+                    }
+                }
+            }
+
+            Utils.WaitForKeyPress();
+        }
+
+        public static void CourseDetails()
+        {
+            Utils.PrintPrompt(courseDetailsPrompt);
+            Utils.PrintCourses(_context);
+            (ConsoleKeyInfo confirmationKey, int left, int top) = Utils.GetConfirmationKey();
+
+            switch (confirmationKey.Key)
+            {
+                case ConsoleKey.Enter:
+                    Utils.SetCursorPosition(left, top);
+                    break;
+                case ConsoleKey.Escape:
+                    return;
+                default:
+                    CourseDetails();
+                    break;
+            }
+
+            string courseId = AnsiConsole.Ask<string>("[green]Course ID:[/]");
+            Course? course = _context.Courses
+                .Where(c => c.CourseId == courseId)
+                .Include(x => x.RegisteredStudents)
+                .ThenInclude(y => y.Student)
+                .FirstOrDefault();
+
+            if (course == null)
+            {
+                AnsiConsole.Markup("\n[underline red]Invalid Course ID[/]");
+                Utils.WaitForKeyPress();
+                CourseDetails();
+            }
+            else
+            {
+                Utils.PrintPrompt(courseDetailsPrompt);
+                AnsiConsole.Markup("\n[underline blue]Course Details\n[/]");
+
+                var table = new Table();
+                table.Border = TableBorder.HeavyHead;
+                table.AddColumn(new TableColumn("[green]Option[/]"));
+                table.AddColumn(new TableColumn("[green]Details[/]"));
+
+                table.AddRow("Course Name", $"{course.CourseName}");
+                table.AddRow("Instructor ID", $"{course.Instructor.UserId}");
+                table.AddRow("Instructor", $"{course.Instructor.Name}");
+                table.AddRow("Course Fee", $"৳ {course.CourseFee}");
+                table.AddRow("Schedule", $"{course.Schedule}");
+                AnsiConsole.Write(table);
+
+                AnsiConsole.Markup("\n[underline blue]Enrolled Students\n[/]");
+                table = new Table();
+                table.Border = TableBorder.HeavyHead;
+                table.AddColumn(new TableColumn("[green]Student ID[/]").Centered());
+                table.AddColumn(new TableColumn("[green]Student Name[/]").Centered());
+
+                foreach(var registeredStudent in course.RegisteredStudents)
+                {
+                    table.AddRow($"{registeredStudent.Student.UserId}", $"{registeredStudent.Student.Name}");
+                }
+                AnsiConsole.Write(table);
+            }
+
+            Utils.WaitForKeyPress();
         }
     }
 }
