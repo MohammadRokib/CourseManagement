@@ -36,7 +36,8 @@ namespace CourseManagement {
                 .WithMany(y => y.RegisteredStudents)
                 .HasForeignKey(z => z.CourseId);
 
-
+            modelBuilder.Entity<Schedule>()
+                .HasOne(x => x.)
 
             modelBuilder.Entity<Teacher>()
                 .HasMany(x => x.AssignedCourses)
