@@ -24,7 +24,7 @@
 <div align="center">
   <img src="demo/login.gif">
   <a href="https://github.com/MohammadRokib/CourseManagement/blob/master/demo/README.MD">Other Demos</a>
-  <h4>A Simple Console Application for Course/Attendence Management using C#</h4>
+  <h4>A Simple Console Application for Course/Attendence Management using C# </h4>
 </div>
 
 
